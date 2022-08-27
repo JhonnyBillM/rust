@@ -668,8 +668,8 @@ impl<'a> Linker for GccLinker<'a> {
                     writeln!(f, "_{}", sym)?;
                 }
             };
-            if let Err(e) = res {
-                self.sess.emit_fatal(LibDefWriteFailure { error_description: format!("{e}") });
+            if let Err(error) = res {
+                self.sess.emit_fatal(LibDefWriteFailure { error });
             }
         } else if is_windows {
             let res: io::Result<()> = try {
@@ -683,8 +683,8 @@ impl<'a> Linker for GccLinker<'a> {
                     writeln!(f, "  {}", symbol)?;
                 }
             };
-            if let Err(e) = res {
-                self.sess.emit_fatal(LibDefWriteFailure { error_description: format!("{e}") });
+            if let Err(error) = res {
+                self.sess.emit_fatal(LibDefWriteFailure { error });
             }
         } else {
             // Write an LD version script
@@ -974,8 +974,8 @@ impl<'a> Linker for MsvcLinker<'a> {
                 writeln!(f, "  {}", symbol)?;
             }
         };
-        if let Err(e) = res {
-            self.sess.emit_fatal(LibDefWriteFailure { error_description: format!("{e}") });
+        if let Err(error) = res {
+            self.sess.emit_fatal(LibDefWriteFailure { error });
         }
         let mut arg = OsString::from("/DEF:");
         arg.push(path);
