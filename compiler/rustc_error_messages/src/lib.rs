@@ -61,6 +61,7 @@ fluent_messages! {
     typeck => "../locales/en-US/typeck.ftl",
     mir_dataflow => "../locales/en-US/mir_dataflow.ftl",
     symbol_mangling => "../locales/en-US/symbol_mangling.ftl",
+    codegen_ssa => "../locales/en-US/codegen_ssa.ftl",
 }
 
 pub use fluent_generated::{self as fluent, DEFAULT_LOCALE_RESOURCES};

@@ -1,6 +1,7 @@
 use rustc_session::cstore::DllImport;
 use rustc_session::Session;
 
+use crate::errors::MissingNativeStaticLibrary;
 use std::io;
 use std::path::{Path, PathBuf};
 
@@ -32,11 +33,7 @@ pub(super) fn find_library(
             }
         }
     }
-    sess.fatal(&format!(
-        "could not find native static library `{}`, \
-                         perhaps an -L flag is missing?",
-        name
-    ));
+    sess.emit_fatal(MissingNativeStaticLibrary { library_name: name });
 }
 
 pub trait ArchiveBuilderBuilder {
