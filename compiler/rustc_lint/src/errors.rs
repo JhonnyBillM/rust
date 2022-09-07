@@ -1,4 +1,4 @@
-use rustc_errors::{fluent, AddSubdiagnostic, ErrorGuaranteed, Handler, SessionDiagnostic};
+use rustc_errors::{fluent, AddSubdiagnostic, DiagnosticHandler, ErrorGuaranteed, Handler};
 use rustc_macros::{SessionDiagnostic, SessionSubdiagnostic};
 use rustc_session::lint::Level;
 use rustc_span::{Span, Symbol};
@@ -119,7 +119,7 @@ pub struct CheckNameUnknown {
     pub sub: RequestedLevel,
 }
 
-impl SessionDiagnostic<'_> for CheckNameUnknown {
+impl DiagnosticHandler<'_> for CheckNameUnknown {
     fn into_diagnostic(
         self,
         handler: &Handler,

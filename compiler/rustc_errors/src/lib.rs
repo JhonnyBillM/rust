@@ -61,7 +61,7 @@ mod snippet;
 mod styled_buffer;
 pub mod translation;
 
-pub use diagnostic_builder::SessionDiagnostic;
+pub use diagnostic_builder::DiagnosticHandler;
 pub use snippet::Style;
 
 pub type PResult<'a, T> = Result<T, DiagnosticBuilder<'a, ErrorGuaranteed>>;

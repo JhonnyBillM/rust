@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
+use rustc_errors::DiagnosticHandler;
 use rustc_errors::ErrorGuaranteed;
-use rustc_errors::SessionDiagnostic;
 use rustc_macros::{LintDiagnostic, SessionDiagnostic};
 use rustc_span::Span;
 
@@ -44,7 +44,7 @@ pub struct UnusedGenericParams {
     pub param_names: Vec<String>,
 }
 
-impl SessionDiagnostic<'_> for UnusedGenericParams {
+impl DiagnosticHandler<'_> for UnusedGenericParams {
     fn into_diagnostic(
         self,
         handler: &'_ rustc_errors::Handler,

@@ -81,15 +81,15 @@ impl<'a> SessionDiagnosticDerive<'a> {
         };
 
         structure.gen_impl(quote! {
-            gen impl<'__session_diagnostic_sess, G>
-                    rustc_errors::SessionDiagnostic<'__session_diagnostic_sess, G>
+            gen impl<'__diagnostic_handler_sess, G>
+                    rustc_errors::DiagnosticHandler<'__diagnostic_handler_sess, G>
                     for @Self
                 where G: rustc_errors::EmissionGuarantee
             {
                 fn into_diagnostic(
                     self,
-                    #sess: &'__session_diagnostic_sess rustc_errors::Handler
-                ) -> rustc_errors::DiagnosticBuilder<'__session_diagnostic_sess, G> {
+                    #sess: &'__diagnostic_handler_sess rustc_errors::Handler
+                ) -> rustc_errors::DiagnosticBuilder<'__diagnostic_handler_sess, G> {
                     use rustc_errors::IntoDiagnosticArg;
                     #implementation
                 }

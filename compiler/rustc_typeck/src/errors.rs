@@ -1,5 +1,5 @@
 //! Errors emitted by typeck.
-use rustc_errors::SessionDiagnostic;
+use rustc_errors::DiagnosticHandler;
 use rustc_errors::{error_code, Applicability, DiagnosticBuilder, ErrorGuaranteed, Handler};
 use rustc_macros::{LintDiagnostic, SessionDiagnostic, SessionSubdiagnostic};
 use rustc_middle::ty::Ty;
@@ -250,7 +250,7 @@ pub struct MissingTypeParams {
 }
 
 // Manual implementation of `SessionDiagnostic` to be able to call `span_to_snippet`.
-impl<'a> SessionDiagnostic<'a> for MissingTypeParams {
+impl<'a> DiagnosticHandler<'a> for MissingTypeParams {
     fn into_diagnostic(self, handler: &'a Handler) -> DiagnosticBuilder<'a, ErrorGuaranteed> {
         let mut err = handler.struct_span_err_with_code(
             self.span,
