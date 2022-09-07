@@ -12,7 +12,8 @@ extern crate rustc_session;
 extern crate rustc_span;
 
 use rustc_errors::{
-    AddSubdiagnostic, SessionDiagnostic, Diagnostic, DiagnosticBuilder, ErrorGuaranteed, Handler, fluent
+    AddSubdiagnostic, DiagnosticHandler, Diagnostic, DiagnosticBuilder,
+    ErrorGuaranteed, Handler, fluent
 };
 use rustc_macros::{SessionDiagnostic, SessionSubdiagnostic};
 use rustc_span::Span;
@@ -33,7 +34,7 @@ struct Note {
 
 pub struct UntranslatableInSessionDiagnostic;
 
-impl<'a> SessionDiagnostic<'a, ErrorGuaranteed> for UntranslatableInSessionDiagnostic {
+impl<'a> DiagnosticHandler<'a, ErrorGuaranteed> for UntranslatableInSessionDiagnostic {
     fn into_diagnostic(self, handler: &'a Handler) -> DiagnosticBuilder<'a, ErrorGuaranteed> {
         handler.struct_err("untranslatable diagnostic")
         //~^ ERROR diagnostics should be created using translatable messages
@@ -42,7 +43,7 @@ impl<'a> SessionDiagnostic<'a, ErrorGuaranteed> for UntranslatableInSessionDiagn
 
 pub struct TranslatableInSessionDiagnostic;
 
-impl<'a> SessionDiagnostic<'a, ErrorGuaranteed> for TranslatableInSessionDiagnostic {
+impl<'a> DiagnosticHandler<'a, ErrorGuaranteed> for TranslatableInSessionDiagnostic {
     fn into_diagnostic(self, handler: &'a Handler) -> DiagnosticBuilder<'a, ErrorGuaranteed> {
         handler.struct_err(fluent::parser::expect_path)
     }
@@ -67,10 +68,10 @@ impl AddSubdiagnostic for TranslatableInAddSubdiagnostic {
 
 pub fn make_diagnostics<'a>(handler: &'a Handler) {
     let _diag = handler.struct_err(fluent::parser::expect_path);
-    //~^ ERROR diagnostics should only be created in `SessionDiagnostic`/`AddSubdiagnostic` impls
+    //~^ ERROR diagnostics should only be created in `DiagnosticHandler`/`AddSubdiagnostic` impls
 
     let _diag = handler.struct_err("untranslatable diagnostic");
-    //~^ ERROR diagnostics should only be created in `SessionDiagnostic`/`AddSubdiagnostic` impls
+    //~^ ERROR diagnostics should only be created in `DiagnosticHandler`/`AddSubdiagnostic` impls
     //~^^ ERROR diagnostics should be created using translatable messages
 }
 

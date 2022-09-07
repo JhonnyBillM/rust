@@ -20,8 +20,8 @@ use rustc_errors::emitter::{Emitter, EmitterWriter, HumanReadableErrorType};
 use rustc_errors::json::JsonEmitter;
 use rustc_errors::registry::Registry;
 use rustc_errors::{
-    error_code, fallback_fluent_bundle, DiagnosticBuilder, DiagnosticId, DiagnosticMessage,
-    ErrorGuaranteed, FluentBundle, LazyFallbackBundle, MultiSpan, SessionDiagnostic,
+    error_code, fallback_fluent_bundle, DiagnosticBuilder, DiagnosticHandler, DiagnosticId,
+    DiagnosticMessage, ErrorGuaranteed, FluentBundle, LazyFallbackBundle, MultiSpan,
 };
 use rustc_macros::HashStable_Generic;
 pub use rustc_span::def_id::StableCrateId;
@@ -454,13 +454,13 @@ impl Session {
     }
     pub fn create_err<'a>(
         &'a self,
-        err: impl SessionDiagnostic<'a>,
+        err: impl DiagnosticHandler<'a>,
     ) -> DiagnosticBuilder<'a, ErrorGuaranteed> {
         self.parse_sess.create_err(err)
     }
     pub fn create_feature_err<'a>(
         &'a self,
-        err: impl SessionDiagnostic<'a>,
+        err: impl DiagnosticHandler<'a>,
         feature: Symbol,
     ) -> DiagnosticBuilder<'a, ErrorGuaranteed> {
         let mut err = self.parse_sess.create_err(err);
@@ -470,25 +470,25 @@ impl Session {
         add_feature_diagnostics(&mut err, &self.parse_sess, feature);
         err
     }
-    pub fn emit_err<'a>(&'a self, err: impl SessionDiagnostic<'a>) -> ErrorGuaranteed {
+    pub fn emit_err<'a>(&'a self, err: impl DiagnosticHandler<'a>) -> ErrorGuaranteed {
         self.parse_sess.emit_err(err)
     }
     pub fn create_warning<'a>(
         &'a self,
-        err: impl SessionDiagnostic<'a, ()>,
+        err: impl DiagnosticHandler<'a, ()>,
     ) -> DiagnosticBuilder<'a, ()> {
         self.parse_sess.create_warning(err)
     }
-    pub fn emit_warning<'a>(&'a self, warning: impl SessionDiagnostic<'a, ()>) {
+    pub fn emit_warning<'a>(&'a self, warning: impl DiagnosticHandler<'a, ()>) {
         self.parse_sess.emit_warning(warning)
     }
     pub fn create_fatal<'a>(
         &'a self,
-        fatal: impl SessionDiagnostic<'a, !>,
+        fatal: impl DiagnosticHandler<'a, !>,
     ) -> DiagnosticBuilder<'a, !> {
         self.parse_sess.create_fatal(fatal)
     }
-    pub fn emit_fatal<'a>(&'a self, fatal: impl SessionDiagnostic<'a, !>) -> ! {
+    pub fn emit_fatal<'a>(&'a self, fatal: impl DiagnosticHandler<'a, !>) -> ! {
         self.parse_sess.emit_fatal(fatal)
     }
     #[inline]
