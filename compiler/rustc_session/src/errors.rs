@@ -1,6 +1,5 @@
 use std::num::NonZeroU32;
 
-use crate as rustc_session;
 use crate::cgu_reuse_tracker::CguReuse;
 use rustc_errors::MultiSpan;
 use rustc_macros::SessionDiagnostic;
