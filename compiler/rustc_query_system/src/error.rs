@@ -1,5 +1,6 @@
 use rustc_errors::AddSubdiagnostic;
 use rustc_span::Span;
+use rustc_macros::{DiagnosticHandler, SessionSubdiagnostic};
 
 pub struct CycleStack {
     pub span: Span,
@@ -38,7 +39,7 @@ pub struct CycleUsage {
     pub usage: String,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(query_system::cycle, code = "E0391")]
 pub struct Cycle {
     #[primary_span]
@@ -54,11 +55,11 @@ pub struct Cycle {
     pub cycle_usage: Option<CycleUsage>,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(query_system::reentrant)]
 pub struct Reentrant;
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(query_system::increment_compilation)]
 #[help]
 #[note(query_system::increment_compilation_note1)]
@@ -68,6 +69,6 @@ pub struct IncrementCompilation {
     pub dep_node: String,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(query_system::query_overflow)]
 pub struct QueryOverflow;

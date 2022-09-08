@@ -1,9 +1,9 @@
 //! Errors emitted by symbol_mangling.
 
-use rustc_macros::SessionDiagnostic;
+use rustc_macros::DiagnosticHandler;
 use rustc_span::Span;
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(symbol_mangling::invalid_symbol_name)]
 pub struct InvalidSymbolName {
     #[primary_span]
@@ -11,7 +11,7 @@ pub struct InvalidSymbolName {
     pub mangled_formatted: String,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(symbol_mangling::invalid_trait_item)]
 pub struct InvalidTraitItem {
     #[primary_span]
@@ -19,7 +19,7 @@ pub struct InvalidTraitItem {
     pub demangling_formatted: String,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(symbol_mangling::alt_invalid_trait_item)]
 pub struct AltInvalidTraitItem {
     #[primary_span]
@@ -27,7 +27,7 @@ pub struct AltInvalidTraitItem {
     pub alt_demangling_formatted: String,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(symbol_mangling::invalid_def_path)]
 pub struct InvalidDefPath {
     #[primary_span]

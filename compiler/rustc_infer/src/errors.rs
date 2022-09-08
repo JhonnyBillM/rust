@@ -1,6 +1,6 @@
 use rustc_errors::{fluent, AddSubdiagnostic, DiagnosticMessage, DiagnosticStyledString};
 use rustc_hir::FnRetTy;
-use rustc_macros::SessionDiagnostic;
+use rustc_macros::DiagnosticHandler;
 use rustc_span::{BytePos, Span};
 
 use crate::infer::error_reporting::{
@@ -8,7 +8,7 @@ use crate::infer::error_reporting::{
     ObligationCauseAsDiagArg,
 };
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(infer::opaque_hidden_type)]
 pub struct OpaqueHiddenTypeDiag {
     #[primary_span]
@@ -20,7 +20,7 @@ pub struct OpaqueHiddenTypeDiag {
     pub hidden_type: Span,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(infer::type_annotations_needed, code = "E0282")]
 pub struct AnnotationRequired<'a> {
     #[primary_span]
@@ -38,7 +38,7 @@ pub struct AnnotationRequired<'a> {
 }
 
 // Copy of `AnnotationRequired` for E0283
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(infer::type_annotations_needed, code = "E0283")]
 pub struct AmbigousImpl<'a> {
     #[primary_span]
@@ -56,7 +56,7 @@ pub struct AmbigousImpl<'a> {
 }
 
 // Copy of `AnnotationRequired` for E0284
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(infer::type_annotations_needed, code = "E0284")]
 pub struct AmbigousReturn<'a> {
     #[primary_span]
@@ -73,7 +73,7 @@ pub struct AmbigousReturn<'a> {
     pub multi_suggestions: Vec<SourceKindMultiSuggestion<'a>>,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(DiagnosticHandler)]
 #[diag(infer::need_type_info_in_generator, code = "E0698")]
 pub struct NeedTypeInfoInGenerator<'a> {
     #[primary_span]
