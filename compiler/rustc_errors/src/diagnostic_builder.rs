@@ -15,7 +15,8 @@ use std::thread::panicking;
 
 /// Trait implemented by error types. This should not be implemented manually. Instead, use
 /// `#[derive(DiagnosticHandler)]` -- see [rustc_macros::DiagnosticHandler].
-#[rustc_diagnostic_item = "DiagnosticHandler"]
+#[cfg_attr(bootstrap, rustc_diagnostic_item = "SessionDiagnostic")]
+#[cfg_attr(not(bootstrap), rustc_diagnostic_item = "DiagnosticHandler")]
 pub trait DiagnosticHandler<'a, T: EmissionGuarantee = ErrorGuaranteed> {
     /// Write out as a diagnostic out of `Handler`.
     #[must_use]
