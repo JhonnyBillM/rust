@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use rustc_errors::DiagnosticHandler;
+use rustc_errors::IntoDiagnostic;
 use rustc_errors::ErrorGuaranteed;
 use rustc_macros::{DiagnosticHandler, LintDiagnostic};
 use rustc_span::Span;
@@ -44,7 +44,7 @@ pub struct UnusedGenericParams {
     pub param_names: Vec<String>,
 }
 
-impl DiagnosticHandler<'_> for UnusedGenericParams {
+impl IntoDiagnostic<'_> for UnusedGenericParams {
     fn into_diagnostic(
         self,
         handler: &'_ rustc_errors::Handler,

@@ -3,7 +3,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use rustc_errors::{error_code, DiagnosticHandler, ErrorGuaranteed};
+use rustc_errors::{error_code, IntoDiagnostic, ErrorGuaranteed};
 use rustc_macros::DiagnosticHandler;
 use rustc_session::config;
 use rustc_span::{sym, Span, Symbol};
@@ -421,7 +421,7 @@ pub(crate) struct MultipleCandidates {
     pub candidates: Vec<PathBuf>,
 }
 
-impl DiagnosticHandler<'_> for MultipleCandidates {
+impl IntoDiagnostic<'_> for MultipleCandidates {
     fn into_diagnostic(
         self,
         handler: &'_ rustc_errors::Handler,
@@ -537,7 +537,7 @@ pub struct InvalidMetadataFiles {
     pub crate_rejections: Vec<String>,
 }
 
-impl DiagnosticHandler<'_> for InvalidMetadataFiles {
+impl IntoDiagnostic<'_> for InvalidMetadataFiles {
     fn into_diagnostic(
         self,
         handler: &'_ rustc_errors::Handler,
@@ -565,7 +565,7 @@ pub struct CannotFindCrate {
     pub locator_triple: TargetTriple,
 }
 
-impl DiagnosticHandler<'_> for CannotFindCrate {
+impl IntoDiagnostic<'_> for CannotFindCrate {
     fn into_diagnostic(
         self,
         handler: &'_ rustc_errors::Handler,

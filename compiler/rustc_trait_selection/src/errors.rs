@@ -1,4 +1,4 @@
-use rustc_errors::{fluent, DiagnosticHandler, ErrorGuaranteed, Handler};
+use rustc_errors::{fluent, IntoDiagnostic, ErrorGuaranteed, Handler};
 use rustc_macros::DiagnosticHandler;
 use rustc_middle::ty::{PolyTraitRef, Ty, Unevaluated};
 use rustc_session::Limit;
@@ -66,7 +66,7 @@ pub struct NegativePositiveConflict<'a> {
     pub positive_impl_span: Result<Span, Symbol>,
 }
 
-impl DiagnosticHandler<'_> for NegativePositiveConflict<'_> {
+impl IntoDiagnostic<'_> for NegativePositiveConflict<'_> {
     fn into_diagnostic(
         self,
         handler: &Handler,

@@ -61,7 +61,7 @@ mod snippet;
 mod styled_buffer;
 pub mod translation;
 
-pub use diagnostic_builder::DiagnosticHandler;
+pub use diagnostic_builder::IntoDiagnostic;
 pub use snippet::Style;
 
 pub type PResult<'a, T> = Result<T, DiagnosticBuilder<'a, ErrorGuaranteed>>;
@@ -1067,36 +1067,36 @@ impl Handler {
         self.inner.borrow_mut().emit_diagnostic(diagnostic)
     }
 
-    pub fn emit_err<'a>(&'a self, err: impl DiagnosticHandler<'a>) -> ErrorGuaranteed {
+    pub fn emit_err<'a>(&'a self, err: impl IntoDiagnostic<'a>) -> ErrorGuaranteed {
         self.create_err(err).emit()
     }
 
     pub fn create_err<'a>(
         &'a self,
-        err: impl DiagnosticHandler<'a>,
+        err: impl IntoDiagnostic<'a>,
     ) -> DiagnosticBuilder<'a, ErrorGuaranteed> {
         err.into_diagnostic(self)
     }
 
     pub fn create_warning<'a>(
         &'a self,
-        warning: impl DiagnosticHandler<'a, ()>,
+        warning: impl IntoDiagnostic<'a, ()>,
     ) -> DiagnosticBuilder<'a, ()> {
         warning.into_diagnostic(self)
     }
 
-    pub fn emit_warning<'a>(&'a self, warning: impl DiagnosticHandler<'a, ()>) {
+    pub fn emit_warning<'a>(&'a self, warning: impl IntoDiagnostic<'a, ()>) {
         self.create_warning(warning).emit()
     }
 
     pub fn create_fatal<'a>(
         &'a self,
-        fatal: impl DiagnosticHandler<'a, !>,
+        fatal: impl IntoDiagnostic<'a, !>,
     ) -> DiagnosticBuilder<'a, !> {
         fatal.into_diagnostic(self)
     }
 
-    pub fn emit_fatal<'a>(&'a self, fatal: impl DiagnosticHandler<'a, !>) -> ! {
+    pub fn emit_fatal<'a>(&'a self, fatal: impl IntoDiagnostic<'a, !>) -> ! {
         self.create_fatal(fatal).emit()
     }
 

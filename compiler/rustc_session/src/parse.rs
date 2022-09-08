@@ -11,7 +11,7 @@ use rustc_data_structures::fx::{FxHashMap, FxHashSet, FxIndexSet};
 use rustc_data_structures::sync::{Lock, Lrc};
 use rustc_errors::{emitter::SilentEmitter, ColorConfig, Handler};
 use rustc_errors::{
-    fallback_fluent_bundle, Applicability, Diagnostic, DiagnosticBuilder, DiagnosticHandler,
+    fallback_fluent_bundle, Applicability, Diagnostic, DiagnosticBuilder, IntoDiagnostic,
     DiagnosticId, DiagnosticMessage, EmissionGuarantee, ErrorGuaranteed, MultiSpan, StashKey,
 };
 use rustc_feature::{find_feature_issue, GateIssue, UnstableFeatures};
@@ -340,34 +340,34 @@ impl ParseSess {
 
     pub fn create_err<'a>(
         &'a self,
-        err: impl DiagnosticHandler<'a>,
+        err: impl IntoDiagnostic<'a>,
     ) -> DiagnosticBuilder<'a, ErrorGuaranteed> {
         err.into_diagnostic(&self.span_diagnostic)
     }
 
-    pub fn emit_err<'a>(&'a self, err: impl DiagnosticHandler<'a>) -> ErrorGuaranteed {
+    pub fn emit_err<'a>(&'a self, err: impl IntoDiagnostic<'a>) -> ErrorGuaranteed {
         self.create_err(err).emit()
     }
 
     pub fn create_warning<'a>(
         &'a self,
-        warning: impl DiagnosticHandler<'a, ()>,
+        warning: impl IntoDiagnostic<'a, ()>,
     ) -> DiagnosticBuilder<'a, ()> {
         warning.into_diagnostic(&self.span_diagnostic)
     }
 
-    pub fn emit_warning<'a>(&'a self, warning: impl DiagnosticHandler<'a, ()>) {
+    pub fn emit_warning<'a>(&'a self, warning: impl IntoDiagnostic<'a, ()>) {
         self.create_warning(warning).emit()
     }
 
     pub fn create_fatal<'a>(
         &'a self,
-        fatal: impl DiagnosticHandler<'a, !>,
+        fatal: impl IntoDiagnostic<'a, !>,
     ) -> DiagnosticBuilder<'a, !> {
         fatal.into_diagnostic(&self.span_diagnostic)
     }
 
-    pub fn emit_fatal<'a>(&'a self, fatal: impl DiagnosticHandler<'a, !>) -> ! {
+    pub fn emit_fatal<'a>(&'a self, fatal: impl IntoDiagnostic<'a, !>) -> ! {
         self.create_fatal(fatal).emit()
     }
 
