@@ -125,7 +125,6 @@ symbols! {
     Symbols {
         AcqRel,
         Acquire,
-        AddSubdiagnostic,
         Alignment,
         Any,
         Arc,
@@ -282,6 +281,7 @@ symbols! {
         String,
         StructuralEq,
         StructuralPartialEq,
+        Subdiagnostic,
         SubdiagnosticMessage,
         Sync,
         T,
