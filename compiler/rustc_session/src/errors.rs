@@ -1,9 +1,8 @@
 use std::num::NonZeroU32;
 
 use crate::cgu_reuse_tracker::CguReuse;
-use crate::{self as rustc_session, SessionDiagnostic};
-use rustc_errors::{fluent, IntoDiagnostic, Handler, MultiSpan};
-use rustc_macros::SessionDiagnostic;
+use rustc_errors::{fluent, DiagnosticBuilder, Handler, IntoDiagnostic, MultiSpan};
+use rustc_macros::Diagnostic;
 use rustc_span::{Span, Symbol};
 use rustc_target::abi::TargetDataLayoutErrors;
 use rustc_target::spec::{SplitDebuginfo, StackProtector, TargetTriple};
@@ -46,10 +45,12 @@ pub struct FeatureDiagnosticHelp {
     pub feature: Symbol,
 }
 
-impl IntoDiagnostic<'_, !> for TargetDataLayoutErrors<'_> {
+pub struct TargetDataLayoutErrorsWrapper<'a>(pub TargetDataLayoutErrors<'a>);
+
+impl IntoDiagnostic<'_, !> for TargetDataLayoutErrorsWrapper<'_> {
     fn into_diagnostic(self, handler: &Handler) -> DiagnosticBuilder<'_, !> {
         let mut diag;
-        match self {
+        match self.0 {
             TargetDataLayoutErrors::InvalidAddressSpace { addr_space, err, cause } => {
                 diag = handler.struct_fatal(fluent::session::target_invalid_address_space);
                 diag.set_arg("addr_space", addr_space);
@@ -97,75 +98,75 @@ impl IntoDiagnostic<'_, !> for TargetDataLayoutErrors<'_> {
     }
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::not_circumvent_feature)]
 pub struct NotCircumventFeature;
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::linker_plugin_lto_windows_not_supported)]
 pub struct LinkerPluginToWindowsNotSupported;
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::profile_use_file_does_not_exist)]
 pub struct ProfileUseFileDoesNotExist<'a> {
     pub path: &'a std::path::Path,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::profile_sample_use_file_does_not_exist)]
 pub struct ProfileSampleUseFileDoesNotExist<'a> {
     pub path: &'a std::path::Path,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::target_requires_unwind_tables)]
 pub struct TargetRequiresUnwindTables;
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::sanitizer_not_supported)]
 pub struct SanitizerNotSupported {
     pub us: String,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::sanitizers_not_supported)]
 pub struct SanitizersNotSupported {
     pub us: String,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::cannot_mix_and_match_sanitizers)]
 pub struct CannotMixAndMatchSanitizers {
     pub first: String,
     pub second: String,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::cannot_enable_crt_static_linux)]
 pub struct CannotEnableCrtStaticLinux;
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::sanitizer_cfi_enabled)]
 pub struct SanitizerCfiEnabled;
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::unstable_virtual_function_elimination)]
 pub struct UnstableVirtualFunctionElimination;
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::unsupported_dwarf_version)]
 pub struct UnsupportedDwarfVersion {
     pub dwarf_version: u32,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::target_stack_protector_not_supported)]
 pub struct StackProtectorNotSupportedForTarget<'a> {
     pub stack_protector: StackProtector,
     pub target_triple: &'a TargetTriple,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(session::split_debuginfo_unstable_platform)]
 pub struct SplitDebugInfoUnstablePlatform {
     pub debuginfo: SplitDebuginfo,

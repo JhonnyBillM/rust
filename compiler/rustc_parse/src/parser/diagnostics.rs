@@ -713,7 +713,7 @@ pub(crate) struct RemoveLet {
     pub span: Span,
 }
 
-#[derive(SessionDiagnostic)]
+#[derive(Diagnostic)]
 #[diag(parser::use_eq_instead)]
 pub(crate) struct UseEqInstead {
     #[primary_span]
