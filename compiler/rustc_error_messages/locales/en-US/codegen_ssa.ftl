@@ -186,3 +186,10 @@ codegen_ssa_apple_sdk_error_sdk_path = failed to get {$sdk_name} SDK path: {erro
 codegen_ssa_read_file = failed to read file: {message}
 
 codegen_ssa_unsupported_link_self_contained = option `-C link-self-contained` is not supported on this target
+
+codegen_ssa_multiple_main_functions = entry symbol `main` declared multiple times
+    .help = did you use `#[no_mangle]` on `fn main`? Use `#[start]` instead
+
+codegen_ssa_metadata_object_file_write = error writing metadata object file: {$error}
+
+codegen_ssa_invalid_windows_subsystem = invalid windows subsystem `{$subsystem}`, only `windows` and `console` are allowed
