@@ -635,4 +635,12 @@ pub enum InvalidMonomorphization<'tcx> {
         span: Span,
         name: Symbol,
     },
+
+    #[diag(codegen_ssa_invalid_monomorphization_simd_argument, code = "E0511")]
+    SimdArgument {
+        #[primary_span]
+        span: Span,
+        name: Symbol,
+        ty: Ty<'tcx>,
+    },
 }

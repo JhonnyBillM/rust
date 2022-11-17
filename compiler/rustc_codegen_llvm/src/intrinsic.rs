@@ -833,6 +833,8 @@ fn generic_simd_intrinsic<'ll, 'tcx>(
     llret_ty: &'ll Type,
     span: Span,
 ) -> Result<&'ll Value, ()> {
+    // Existing macros:
+
     // macros for error handling:
     #[allow(unused_macro_rules)]
     macro_rules! emit_error {
@@ -870,13 +872,50 @@ fn generic_simd_intrinsic<'ll, 'tcx>(
         };
     }
 
+    // [Experimental] macros for localized error handling:
+
+    macro_rules! return_localized_error {
+        ($diag: tt) => {{
+            bx.sess().emit_err($diag);
+            return Err(());
+        }};
+    }
+
+    macro_rules! require_localized {
+        ($cond: expr, $diag: tt) => {
+            if !$cond {
+                return_localized_error!($diag);
+            }
+        };
+    }
+
+    macro_rules! require_simd_localized {
+        ($ty: expr, $diag: tt) => {
+            require_localized!($ty.is_simd(), $diag)
+        };
+    }
+
     let tcx = bx.tcx();
     let sig =
         tcx.normalize_erasing_late_bound_regions(ty::ParamEnv::reveal_all(), callee_ty.fn_sig(tcx));
     let arg_tys = sig.inputs();
 
     if name == sym::simd_select_bitmask {
+        // Example of the two options presented above:
+
+        // 1. Existing code: macro passing non-translatable strings.
         require_simd!(arg_tys[1], "argument");
+
+        // 2. Macro accepting diagnostics.
+        let diag = InvalidMonomorphization::SimdArgument { span, name, ty: arg_tys[1] };
+        require_simd_localized!(arg_tys[1], diag);
+
+        // 3. No macros: evaluating condition, emitting diagnostic and returning error.
+        if !arg_tys[1].is_simd() {
+            tcx.sess.emit_err(InvalidMonomorphization::SimdArgument { span, name, ty: arg_tys[1] });
+            return Err(());
+        }
+
         let (len, _) = arg_tys[1].simd_size_and_type(bx.tcx());
 
         let expected_int_bits = (len.max(8) - 1).next_power_of_two();
@@ -1298,11 +1337,54 @@ fn generic_simd_intrinsic<'ll, 'tcx>(
         // * T: type of the element to load
         // * M: any integer width is supported, will be truncated to i1
 
+        // Example of the two options presented above:
+
+        // 1. Existing code: macro passing non-translatable strings.
         // All types must be simd vector types
         require_simd!(in_ty, "first");
         require_simd!(arg_tys[1], "second");
         require_simd!(arg_tys[2], "third");
         require_simd!(ret_ty, "return");
+
+        // 2. Macro accepting diagnostics.
+        let diag = InvalidMonomorphization::SimdFirstType { span, name, in_ty };
+        require_simd!(in_ty, diag);
+        let diag = InvalidMonomorphization::SimdSecondType { span, name, in_ty: arg_tys[1] };
+        require_simd!(arg_tys[1], diag);
+        let diag = InvalidMonomorphization::SimdThirdType { span, name, in_ty: arg_tys[2] };
+        require_simd!(arg_tys[2], diag);
+        let diag = InvalidMonomorphization::SimdReturnType { span, name, in_ty: ret_ty };
+        require_simd!(ret_ty, diag);
+
+        // 3. No macros: evaluating condition, emitting diagnostic and returning error.
+        if !in_ty.is_simd() {
+            tcx.sess.emit_err(InvalidMonomorphization::SimdFirstType { span, name, in_ty });
+            return Err(());
+        }
+        if !arg_tys[1].is_simd() {
+            tcx.sess.emit_err(InvalidMonomorphization::SimdSecondType {
+                span,
+                name,
+                in_ty: arg_tys[1],
+            });
+            return Err(());
+        }
+        if !arg_tys[2].is_simd() {
+            tcx.sess.emit_err(InvalidMonomorphization::SimdThirdType {
+                span,
+                name,
+                in_ty: arg_tys[2],
+            });
+            return Err(());
+        }
+        if !ret_ty.is_simd() {
+            tcx.sess.emit_err(InvalidMonomorphization::SimdReturnType {
+                span,
+                name,
+                in_ty: ret_ty,
+            });
+            return Err(());
+        }
 
         // Of the same length:
         let (out_len, _) = arg_tys[1].simd_size_and_type(bx.tcx());
